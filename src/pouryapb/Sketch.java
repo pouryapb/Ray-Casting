@@ -16,6 +16,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import pouryapb.FastNoiseLite.CellularDistanceFunction;
+import pouryapb.FastNoiseLite.FractalType;
+
 public class Sketch extends JFrame {
 
 	private static final long serialVersionUID = -7044496989599732077L;
@@ -125,12 +128,12 @@ public class Sketch extends JFrame {
 		// walls.add(new Boundary(500, 50, 750, 50, !design));
 
 		var noise = new FastNoiseLite();
-		var resolution = 5;
-		var length = 5;
+		var resolution = 2;
+		var length = 1;
 		for (float i = 0; i < 800; i += resolution) {
 			for (float j = 0; j < 600; j += resolution) {
 				float noiseVal = noise.GetNoise(i, j);
-				if (noiseVal > 0.3) {
+				if (noiseVal > 0.9) {
 					walls.add(new Boundary(i, j, i + length, j + length, !design));
 				}
 			}
