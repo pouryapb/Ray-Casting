@@ -47,14 +47,14 @@ public class Sketch extends JFrame {
 			g.setColor(new Color(255, 255, 255, 50));
 			g.fillPolygon(poly);
 
-			Area shape = new Area(new Rectangle(199, 299, 22, 22));
-			Area tempShape1 = new Area(new Rectangle(199, 299, 22, 22));
-			Area tempShape2 = new Area(poly);
-			tempShape1.subtract(tempShape2);
-			shape.subtract(tempShape1);
+			// Area shape = new Area(new Rectangle(199, 299, 22, 22));
+			// Area tempShape1 = new Area(new Rectangle(199, 299, 22, 22));
+			// Area tempShape2 = new Area(poly);
+			// tempShape1.subtract(tempShape2);
+			// shape.subtract(tempShape1);
 
-			g.setColor(Color.red);
-			((Graphics2D) g).fill(shape);
+			// g.setColor(Color.red);
+			// ((Graphics2D) g).fill(shape);
 		}
 	}
 
@@ -75,10 +75,10 @@ public class Sketch extends JFrame {
 		level();
 
 		// red box
-		walls.add(new Boundary(200, 300, 220, 300, true));
-		walls.add(new Boundary(200, 300, 200, 320, true));
-		walls.add(new Boundary(200, 320, 220, 320, true));
-		walls.add(new Boundary(220, 300, 220, 320, true));
+		// walls.add(new Boundary(200, 300, 220, 300, true));
+		// walls.add(new Boundary(200, 300, 200, 320, true));
+		// walls.add(new Boundary(200, 320, 220, 320, true));
+		// walls.add(new Boundary(220, 300, 220, 320, true));
 
 		canvas.addMouseMotionListener(new MouseMotionListener() {
 
@@ -102,27 +102,39 @@ public class Sketch extends JFrame {
 		walls.add(new Boundary(800, 0, 800, 600, true));
 		walls.add(new Boundary(0, 600, 800, 600, true));
 
-		boolean design = false;
+		boolean design = true;
 
-		walls.add(new Boundary(50, 50, 50, 550, design));
-		walls.add(new Boundary(150, 50, 150, 600, design));
-		walls.add(new Boundary(350, 100, 350, 600, design));
-		walls.add(new Boundary(450, 50, 450, 500, design));
-		walls.add(new Boundary(590, 250, 590, 600, design));
-		walls.add(new Boundary(750, 200, 750, 550, design));
-		walls.add(new Boundary(250, 170, 250, 200, design));
-		walls.add(new Boundary(700, 50, 700, 450, design));
+		// walls.add(new Boundary(50, 50, 50, 550, !design));
+		// walls.add(new Boundary(150, 50, 150, 600, !design));
+		// walls.add(new Boundary(350, 100, 350, 600, !design));
+		// walls.add(new Boundary(450, 50, 450, 500, !design));
+		// walls.add(new Boundary(590, 250, 590, 600, !design));
+		// walls.add(new Boundary(750, 200, 750, 550, !design));
+		// walls.add(new Boundary(250, 170, 250, 200, !design));
+		// walls.add(new Boundary(700, 50, 700, 450, !design));
 
-		walls.add(new Boundary(50, 20, 800, 20, design));
-		walls.add(new Boundary(500, 500, 590, 500, design));
-		walls.add(new Boundary(640, 500, 750, 500, design));
-		walls.add(new Boundary(50, 500, 350, 500, design));
-		walls.add(new Boundary(200, 150, 350, 150, design));
-		walls.add(new Boundary(50, 200, 330, 200, design));
-		walls.add(new Boundary(350, 200, 550, 200, design));
-		walls.add(new Boundary(150, 100, 300, 100, design));
-		walls.add(new Boundary(150, 50, 350, 50, design));
-		walls.add(new Boundary(500, 50, 750, 50, design));
+		// walls.add(new Boundary(50, 20, 800, 20, !design));
+		// walls.add(new Boundary(500, 500, 590, 500, !design));
+		// walls.add(new Boundary(640, 500, 750, 500, !design));
+		// walls.add(new Boundary(50, 500, 350, 500, !design));
+		// walls.add(new Boundary(200, 150, 350, 150, !design));
+		// walls.add(new Boundary(50, 200, 330, 200, !design));
+		// walls.add(new Boundary(350, 200, 550, 200, !design));
+		// walls.add(new Boundary(150, 100, 300, 100, !design));
+		// walls.add(new Boundary(150, 50, 350, 50, !design));
+		// walls.add(new Boundary(500, 50, 750, 50, !design));
+
+		var noise = new FastNoiseLite();
+		var resolution = 5;
+		var length = 5;
+		for (float i = 0; i < 800; i += resolution) {
+			for (float j = 0; j < 600; j += resolution) {
+				float noiseVal = noise.GetNoise(i, j);
+				if (noiseVal > 0.3) {
+					walls.add(new Boundary(i, j, i + length, j + length, !design));
+				}
+			}
+		}
 	}
 
 	public static void main(String[] args) {
