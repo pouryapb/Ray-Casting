@@ -5,19 +5,15 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
-import java.awt.geom.Area;
 import java.util.ArrayList;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-
-import pouryapb.FastNoiseLite.CellularDistanceFunction;
-import pouryapb.FastNoiseLite.FractalType;
 
 public class Sketch extends JFrame {
 
@@ -25,6 +21,7 @@ public class Sketch extends JFrame {
 	private DrawCanvas canvas;
 	private transient ArrayList<Boundary> walls = new ArrayList<>();
 	private transient Particle particle = new Particle(200, 100, new Vector(0, -1));
+	private transient float z = 0;
 
 	private class DrawCanvas extends JPanel {
 
@@ -38,17 +35,17 @@ public class Sketch extends JFrame {
 
 			((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-			for (Boundary wall : walls) {
-				if (!wall.exception)
-					wall.update(g, new Color(255, 255, 255, 120));
-			}
+			// for (Boundary wall : walls) {
+			// if (!wall.exception)
+			// wall.update(g, new Color(255, 255, 255, 120));
+			// }
 
-			particle.update(g);
-			Polygon poly = particle.look(walls);
+			// particle.update(g);
+			// Polygon poly = particle.look(walls);
 
 			// draw the light
-			g.setColor(new Color(255, 255, 255, 50));
-			g.fillPolygon(poly);
+			// g.setColor(new Color(255, 255, 255, 50));
+			// g.fillPolygon(poly);
 
 			// Area shape = new Area(new Rectangle(199, 299, 22, 22));
 			// Area tempShape1 = new Area(new Rectangle(199, 299, 22, 22));
@@ -58,6 +55,13 @@ public class Sketch extends JFrame {
 
 			// g.setColor(Color.red);
 			// ((Graphics2D) g).fill(shape);
+
+			z += 1;
+			// walls.clear();
+			// level();
+			var image = createNoiseImage();
+			g.drawImage(image, 0, 0, null);
+			repaint();
 		}
 	}
 
@@ -75,7 +79,7 @@ public class Sketch extends JFrame {
 		requestFocusInWindow();
 		setVisible(true);
 
-		level();
+		// level();
 
 		// red box
 		// walls.add(new Boundary(200, 300, 220, 300, true));
@@ -87,7 +91,7 @@ public class Sketch extends JFrame {
 
 			public void mouseMoved(MouseEvent arg0) {
 				particle.setPos(arg0.getPoint());
-				repaint();
+				// repaint();
 			}
 
 			public void mouseDragged(MouseEvent arg0) {
@@ -128,16 +132,42 @@ public class Sketch extends JFrame {
 		// walls.add(new Boundary(500, 50, 750, 50, !design));
 
 		var noise = new FastNoiseLite();
-		var resolution = 2;
-		var length = 1;
+		var resolution = 5;
+		var length = 2;
 		for (float i = 0; i < 800; i += resolution) {
 			for (float j = 0; j < 600; j += resolution) {
-				float noiseVal = noise.GetNoise(i, j);
-				if (noiseVal > 0.9) {
+				float noiseVal = noise.GetNoise(i, j, z);
+				if (noiseVal > 0.4) {
 					walls.add(new Boundary(i, j, i + length, j + length, !design));
 				}
 			}
 		}
+	}
+
+	private BufferedImage createNoiseImage() {
+		var noise = new FastNoiseLite();
+		noise.SetSeed(1);
+		var image = new BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB);
+		for (float i = 0; i < 800; i++) {
+			for (float j = 0; j < 600; j++) {
+				float noiseVal = noise.GetNoise(i, j, z);
+				var h = map(noiseVal, -1, 1, 0, 1);
+				image.setRGB((int) i, (int) j, rgbToGrayColor(Color.getHSBColor(h, 1, 1)).getRGB());
+			}
+		}
+		return image;
+	}
+
+	private float map(float value, float min, float max, float newMin, float newMax) {
+		return (value - min) / (max - min) * (newMax - newMin) + newMin;
+	}
+
+	private Color rgbToGrayColor(Color rgbColor) {
+		int r = rgbColor.getRed();
+		int g = rgbColor.getGreen();
+		int b = rgbColor.getBlue();
+		int gray = (int) (0.21 * r + 0.71 * g + 0.07 * b);
+		return new Color(gray, gray, gray);
 	}
 
 	public static void main(String[] args) {
